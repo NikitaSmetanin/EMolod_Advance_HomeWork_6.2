@@ -1,75 +1,155 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EMolod_Advance_HomeWork_6._2
 {
     public partial class Form1 : Form
     {
-        double number = 1;
+        double number = 0;
+        string operation;
+        bool isDot = false;
         public Form1()
         {
             InitializeComponent();
 
             int x = 20;
             int y = 160;
-            for (int i = 0; i < 3; i++)
+
+            string[] chars = {  "%", "C", "<<", "=",
+                                "1", "2", "3", "+",
+                                "4", "5", "6", "-",
+                                "7", "8", "9", "*",
+                                "±", "0", ",", "/" };
+            for (int i = 0; i < 5; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < 4; j++)
                 {
-                    this.createButton(new Point(x + 70 * j, y + 70 * i), number.ToString(), new Size(50, 50));
+                    this.createButton(new Point(x + 70 * j, y + 70 * i), chars[(int)number], new Size(50, 50));
                     number++;
                 }
             }
-            this.createButton(new Point(20, 370), "0", new Size(190, 50));         
-
+            number = 0;            
         }
 
-        private System.Windows.Forms.Button createButton(Point point, string text, Size size)
+        // Функція створення кнопок з цифрами
+        private Button createButton(Point point, string text, Size size)
         {
-            System.Windows.Forms.Button button = new System.Windows.Forms.Button();
+            Button button = new Button();
 
             button.Font = new Font("Comic Sans MS", 18F, FontStyle.Regular, GraphicsUnit.Point);
             button.Location = point;
-            button.Name = "numberButton";
+            button.Name = "Button";
             button.Size = size;
             button.TabIndex = 0;
             button.Text = text;
             button.UseVisualStyleBackColor = true;
-            button.Click += numberButton_Click;
+            button.Click += Button_Click;
 
             this.Controls.Add(button);
 
-            return button;
+            return button;            
         }
-        // Функція обробки числових кнопок
-        private void numberButton_Click(object sender, EventArgs e)
+        // Функція обробки кнопок
+        private void Button_Click(object sender, EventArgs e)
         {
-            mainTextBox.Text += ((System.Windows.Forms.Button)sender).Text;
+            string text = ((Button)sender).Text;
+
+            switch (text)
+            {
+                case "0" or "1" or "2" or "3" or "4" or "5" or "6" or "7" or "8" or "9": 
+                    mainTextBox.Text += text; 
+                    break;
+
+                case ",":
+                    if (!isDot)
+                    {
+                        mainTextBox.Text += text;
+                        isDot = true;
+                    }                        
+                    break;
+
+                case ("<<"):
+                    if (mainTextBox.Text.Length != 0)
+                        mainTextBox.Text = mainTextBox.Text.Substring(0, mainTextBox.Text.Length - 1); 
+                    break;
+
+                case "+" or "-" or "*" or "/" or "%":
+                    if (!getDouble(mainTextBox.Text, out this.number))
+                        break;                               
+                    mainTextBox.Text = string.Empty;
+                    this.operation = text;
+                    isDot = false;
+                    break;
+
+                case "=":
+                    double secondNumber = 0;
+                    if (!getDouble(mainTextBox.Text, out secondNumber))
+                        break;
+                    switch(operation)
+                    {
+                        case "+":
+                            mainTextBox.Text = (this.number + secondNumber).ToString();
+                            break;
+                        case "-":
+                            mainTextBox.Text = (this.number - secondNumber).ToString();
+                            break;
+                        case "*":
+                            mainTextBox.Text = (this.number * secondNumber).ToString();
+                            break;
+                        case "/":
+                            if (Convert.ToDouble(mainTextBox.Text) != 0)
+                                mainTextBox.Text = (this.number / secondNumber).ToString();
+                            else
+                                MessageBox.Show("Не можна ділити на нуль", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        case "%":
+                            mainTextBox.Text = (this.number * secondNumber / 100).ToString();
+                            break;
+                    }
+                    historyTextBox.Text += this.number.ToString() + " " + operation + " " + secondNumber.ToString() +
+                            " = " + mainTextBox.Text + Environment.NewLine;
+                    break;
+
+                case "C":
+                    this.number = 0;
+                    mainTextBox.Text = string.Empty;
+                    isDot = false;
+                    break;
+
+                case "±":
+                    mainTextBox.Text = (-1 * Convert.ToDouble(mainTextBox.Text)).ToString();
+                    break;
+
+                default:
+                    MessageBox.Show("Ця функція в розробці", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    break;
+            }
+        }        
+        // Функція шаблонізації введення даних в текстове поле
+        private void mainTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char number = e.KeyChar;
+            if (!Char.IsDigit(number) && number != 8 && number != 44) // цифри, клавіша BackSpace та кома
+            {
+                e.Handled = true;
+            }
         }
-        // Функція обробки кнопок операцій +, -, /, *
-        private void operationButton1_Click(object sender, EventArgs e)
-        {
-            this.number = Convert.ToDouble(mainTextBox.Text);
-            mainTextBox.Text = string.Empty;
-        }
-        // Функція обробки кнопки =
-        private void equalButton_Click(object sender, EventArgs e)
-        {
-            mainTextBox.Text = (this.number + Convert.ToDouble(mainTextBox.Text)).ToString();
-        }
-        // Функція обробки кнопки очистки
-        private void clearButton_Click(object sender, EventArgs e)
-        {
-            this.number = 0;
-            mainTextBox.Text = string.Empty;
+        // Функція отримання числового значення з текстового поля 
+        // параметри - рядок типу string, змінна типу double
+        private bool getDouble(string text, out double number)
+        {            
+            try
+            {
+                number = Convert.ToDouble(mainTextBox.Text);
+            }
+            catch
+            {
+                MessageBox.Show("Невірне значення у полі вводу", "Помилка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                number = 0;
+                return false;
+            }
+            return true;
         }
     }
 }

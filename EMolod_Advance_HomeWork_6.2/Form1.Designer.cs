@@ -34,12 +34,13 @@
             // 
             // mainTextBox
             // 
-            this.mainTextBox.Location = new System.Drawing.Point(13, 124);
+            this.mainTextBox.Font = new System.Drawing.Font("Comic Sans MS", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.mainTextBox.Location = new System.Drawing.Point(13, 117);
             this.mainTextBox.Name = "mainTextBox";
-            this.mainTextBox.ReadOnly = true;
-            this.mainTextBox.Size = new System.Drawing.Size(297, 26);
+            this.mainTextBox.Size = new System.Drawing.Size(277, 34);
             this.mainTextBox.TabIndex = 0;
             this.mainTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.mainTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.mainTextBox_KeyPress);
             // 
             // historyTextBox
             // 
@@ -48,7 +49,7 @@
             this.historyTextBox.Name = "historyTextBox";
             this.historyTextBox.ReadOnly = true;
             this.historyTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.historyTextBox.Size = new System.Drawing.Size(298, 95);
+            this.historyTextBox.Size = new System.Drawing.Size(278, 95);
             this.historyTextBox.TabIndex = 1;
             this.historyTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -56,13 +57,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(322, 441);
+            this.ClientSize = new System.Drawing.Size(301, 507);
             this.Controls.Add(this.historyTextBox);
             this.Controls.Add(this.mainTextBox);
             this.Font = new System.Drawing.Font("Comic Sans MS", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Simple Calculator";
             this.ResumeLayout(false);
             this.PerformLayout();
 
